@@ -1,4 +1,4 @@
-name: Destroy Created Infrastructure 
+name: Destroy Cognito
 
 on:
   workflow_dispatch:
@@ -22,12 +22,12 @@ jobs:
 
       - name: terraform init
         run: |
-          cd infra
+          cd src/aws/cognitosetup
           terraform init
 
       - name: terraform plan destroy
         run: |
-          cd infra
+          cd src/aws/cognitosetup
           terraform plan -destroy
 
   apply:
@@ -51,10 +51,10 @@ jobs:
 
       - name: terraform init
         run: |
-          cd src
+          cd src/aws/cognitosetup
           terraform init
 
       - name: terraform destroy
         run: |
-          cd src
+          cd src/aws/cognitosetup
           terraform destroy -auto-approve

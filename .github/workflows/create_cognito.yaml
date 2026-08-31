@@ -1,4 +1,4 @@
-name: Create Infrastructure
+name: Create Cognito
 
 on:
   workflow_dispatch:
@@ -29,12 +29,12 @@ jobs:
 
       - name: terraform init
         run: |
-          cd src
+          cd src/aws/cognitosetup
           terraform init
 
       - name: terraform plan
         run: |
-          cd src
+          cd src/aws/cognitosetup
           terraform plan
 
   apply:
@@ -58,10 +58,10 @@ jobs:
     
       - name: terraform init
         run: |
-          cd src
+          cd src/aws/cognitosetup
           terraform init
 
       - name: terraform apply
         run: |
-          cd src
+          cd src/aws/cognitosetup
           terraform apply -auto-approve
