@@ -6,7 +6,7 @@ resource "aws_cognito_user_pool" "yami_users" {
   name = "yami-user-pool"
 
   username_attributes     = ["phone_number"]
-  # auto_verified_attributes = ["phone_number"]
+  auto_verified_attributes = ["phone_number"]
 
   password_policy {
     minimum_length    = 8
@@ -16,10 +16,10 @@ resource "aws_cognito_user_pool" "yami_users" {
     require_uppercase = false
   }
 
-  # sms_configuration {
-  #   external_id    = "yami-sms"
-  #   sns_caller_arn = aws_iam_role.cognito_sms_role.arn
-  # }
+  sms_configuration {
+    external_id    = "yami-sms"
+    sns_caller_arn = aws_iam_role.cognito_sms_role.arn
+  }
 
   # lambda_config {
   #   post_confirmation = aws_lambda_function.post_confirmation.arn
@@ -46,36 +46,36 @@ resource "aws_cognito_user_pool_client" "yami_client" {
   ]
 }
 
-# IAM role Cognito assumes to publish SMS via SNS
-# resource "aws_iam_role" "cognito_sms_role" {
-#   name = "cognito-sms-role"
+#IAM role Cognito assumes to publish SMS via SNS
+resource "aws_iam_role" "cognito_sms_role" {
+  name = "cognito-sms-role"
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [{
-#       Effect = "Allow"
-#       Principal = { Service = "cognito-idp.amazonaws.com" }
-#       Action = "sts:AssumeRole"
-#       Condition = {
-#         StringEquals = { "sts:ExternalId" = "yami-sms" }
-#       }
-#     }]
-#   })
-# }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = { Service = "cognito-idp.amazonaws.com" }
+      Action = "sts:AssumeRole"
+      Condition = {
+        StringEquals = { "sts:ExternalId" = "yami-sms" }
+      }
+    }]
+  })
+}
 
-# resource "aws_iam_role_policy" "cognito_sms_policy" {
-#   name = "cognito-sms-policy"
-#   role = aws_iam_role.cognito_sms_role.id
+resource "aws_iam_role_policy" "cognito_sms_policy" {
+  name = "cognito-sms-policy"
+  role = aws_iam_role.cognito_sms_role.id
 
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [{
-#       Effect   = "Allow"
-#       Action   = "sns:Publish"
-#       Resource = "*"
-#     }]
-#   })
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "sns:Publish"
+      Resource = "*"
+    }]
+  })
+}
 
 # # ---------------------------------------------------------------------------
 # # SQS queue (with DLQ) sitting between the two Lambdas
