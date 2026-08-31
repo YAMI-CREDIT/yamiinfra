@@ -46,7 +46,7 @@ resource "aws_cognito_user_pool_client" "yami_client" {
   ]
 }
 
-#IAM role Cognito assumes to publish SMS via SNS
+# IAM role Cognito assumes to publish SMS via SNS
 resource "aws_iam_role" "cognito_sms_role" {
   name = "cognito-sms-role"
 
