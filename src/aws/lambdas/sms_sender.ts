@@ -5,11 +5,11 @@ interface SendSmsPayload {
     message: string;
 }
 
-interface SmsResponse {
-    success: boolean;
-    message: string;
-    data?: any;
-}
+// interface SmsResponse {
+//     success: boolean;
+//     message: string;
+//     data?: any;
+// }
 
 export const sendSms = async ({
     to,
@@ -41,9 +41,11 @@ export const sendSms = async ({
 
 
    //// log the response for debugging purposes 
-    console.log(
-        `response=${JSON.stringify(data)}`
-    );
+    console.log(JSON.stringify({
+        level: "info",
+        event: "sms_provider_response",
+        sms_sender_response: data
+    }));
 
 
     // Termii returns an error object even with HTTP 200 in some cases
