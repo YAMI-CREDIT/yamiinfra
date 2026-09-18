@@ -1,8 +1,3 @@
-# variable "backend_user_registration_url" {
-#   description = "HTTPS endpoint on backend that receives confirmed user registration"
-#   type        = string
-#   default     = "https://yamicredit.com/api/v1/users"
-# }
 variable "lambda_function_path" {
   description = "path to the Lambda function code"
   type        = string

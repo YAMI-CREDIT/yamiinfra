@@ -5,12 +5,6 @@ interface SendSmsPayload {
     message: string;
 }
 
-// interface SmsResponse {
-//     success: boolean;
-//     message: string;
-//     data?: any;
-// }
-
 export const sendSms = async ({
     to,
     message,
