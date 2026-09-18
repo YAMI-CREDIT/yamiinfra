@@ -17,6 +17,25 @@ jobs:
       #     output_format: cli
       #     directory: ./infra
 
+      - name : setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: install dependencies
+        run: |
+          cd src/aws/lambdas
+          npm install
+
+      - name: build lambda
+        run: |
+          cd src/aws/lambdas
+          npm run build
+
+      - name: copy lambda funtion to cognito folder
+        run: |
+          mkdir -p src/aws/cognitosetup/dist
+          cp -r src/aws/lambdas/dist/* src/aws/cognitosetup/dist/
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@v4
@@ -46,6 +65,26 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v7
+
+      - name : setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: install dependencies
+        run: |
+          cd src/aws/lambdas
+          npm install
+
+      - name: build lambda
+        run: |
+          cd src/aws/lambdas
+          npm run build
+
+      - name: copy lambda funtion to cognito folder
+        run: |
+          mkdir -p src/aws/cognitosetup/dist
+          cp -r src/aws/lambdas/dist/* src/aws/cognitosetup/dist/
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@v4
