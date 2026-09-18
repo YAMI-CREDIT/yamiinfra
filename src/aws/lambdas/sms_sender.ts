@@ -39,9 +39,10 @@ export const sendSms = async ({
         }
     );
 
-    
+
+   //// log the response for debugging purposes 
     console.log(
-        `ResponseCode=${data.code}, ` + `message=${data.message}`
+        `response=${JSON.stringify(data)}`
     );
 
 
