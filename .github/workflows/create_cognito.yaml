@@ -17,6 +17,20 @@ jobs:
       #     output_format: cli
       #     directory: ./infra
 
+      - name : setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: install dependencies
+        run: |
+          cd src/aws/lambdas
+          npm install
+
+      - name: build lambda
+        run: |
+          cd src/aws/lambdas
+          npm run build
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@v4
@@ -35,7 +49,7 @@ jobs:
       - name: terraform plan
         run: |
           cd src/aws/cognitosetup
-          terraform plan
+          terraform plan -var="sms_sender_apikey=${{ secrets.TERMII_API_KEY }}"
 
   apply:
     name: apply changes
@@ -46,6 +60,21 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v7
+
+      - name : setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: install dependencies
+        run: |
+          cd src/aws/lambdas
+          npm install
+
+      - name: build lambda
+        run: |
+          cd src/aws/lambdas
+          npm run build
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@v4
@@ -64,4 +93,4 @@ jobs:
       - name: terraform apply
         run: |
           cd src/aws/cognitosetup
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var="sms_sender_apikey=${{ secrets.TERMII_API_KEY }}"
