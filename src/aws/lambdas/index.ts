@@ -39,6 +39,12 @@ interface CustomSmsSenderEvent {
 }
 
 export const handler = async (event: CustomSmsSenderEvent) => {
+    console.log(
+        `CustomSMS sender invoked: triggerSource=${event.triggerSource}, ` +
+        `phone=${event.request.userAttributes.phone_number ?? "unknown"}`
+    );
+
+
     if (!event.request.code) {
         // Some trigger sources (e.g. certain admin flows) may not carry a code.
         // Nothing to send in that case.
@@ -58,6 +64,8 @@ export const handler = async (event: CustomSmsSenderEvent) => {
         to: phone,
         message: messageFor(event.triggerSource, code),
     });
+
+    console.log(`Called sendSms with phone=${phone} and code=${code}`);
 
     // Cognito ignores the return value of this trigger; throwing is the
     // only way to signal failure back to the confirmation flow.

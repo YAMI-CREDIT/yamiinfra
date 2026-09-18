@@ -39,6 +39,12 @@ export const sendSms = async ({
         }
     );
 
+    
+    console.log(
+        `ResponseCode=${data.code}, ` + `message=${data.message}`
+    );
+
+
     // Termii returns an error object even with HTTP 200 in some cases
     if (
         data.code !== "ok" &&
