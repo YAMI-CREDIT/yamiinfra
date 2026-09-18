@@ -49,7 +49,7 @@ jobs:
       - name: terraform plan
         run: |
           cd src/aws/cognitosetup
-          terraform plan -var="sms_sender_apikey=${{ secrets.TERMII_API_KEY }}"
+          terraform plan
 
   apply:
     name: apply changes
@@ -93,4 +93,4 @@ jobs:
       - name: terraform apply
         run: |
           cd src/aws/cognitosetup
-          terraform apply -auto-approve -var="sms_sender_apikey=${{ secrets.TERMII_API_KEY }}"
+          terraform apply -auto-approve
