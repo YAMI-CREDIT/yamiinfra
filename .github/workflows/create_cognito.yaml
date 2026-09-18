@@ -32,6 +32,11 @@ jobs:
           cd src/aws/lambdas
           npm run build
 
+      - name: copy lambda funtion to cognito folder
+        run: |
+          mkdir -p src/aws/cognitosetup/dist
+          cp -r src/aws/lambdas/dist/* src/aws/cognitosetup/dist/
+
       - name: setup terraform
         uses: hashicorp/setup-terraform@v4
         with:
@@ -75,6 +80,11 @@ jobs:
         run: |
           cd src/aws/lambdas
           npm run build
+
+      - name: copy lambda funtion to cognito folder
+        run: |
+          mkdir -p src/aws/cognitosetup/dist
+          cp -r src/aws/lambdas/dist/* src/aws/cognitosetup/dist/
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@v4
