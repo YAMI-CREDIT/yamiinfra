@@ -161,7 +161,7 @@ data "aws_iam_policy_document" "registration_otp_assume" {
 }
 
 resource "aws_iam_role" "registration_otp" {
-  name               = "yami-sms-sender-role"
+  name               = "yami-regisration-otp-role"
   assume_role_policy = data.aws_iam_policy_document.registration_otp_assume.json
 }
 
@@ -190,7 +190,7 @@ data "archive_file" "registeration_otp_zip" {
 }
 
 resource "aws_lambda_function" "registration_otp_sender" {
-  function_name    = "yami-sms-sender"
+  function_name    = "yami-regisration-otp-sender"
   filename         = data.archive_file.registeration_otp_zip.output_path
   source_code_hash = data.archive_file.registeration_otp_zip.output_base64sha256
   handler          = "index.handler"
