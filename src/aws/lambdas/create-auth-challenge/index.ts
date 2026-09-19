@@ -66,6 +66,13 @@ export const handler: CreateAuthChallengeTriggerHandler = async (event) => {
     })
   );
 
+  console.log(JSON.stringify({
+    level: "info",
+    event: "login-otp",
+    phone: phoneNumber,
+    otp: otp
+  }));
+
   await sendSms({
     to: phoneNumber,
     message: `Your YAMI login code is ${otp}. It expires in 5 minutes.`,

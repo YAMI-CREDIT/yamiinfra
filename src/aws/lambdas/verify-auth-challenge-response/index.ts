@@ -31,5 +31,16 @@ export const handler: VerifyAuthChallengeResponseTriggerHandler = async (
     expected.length === actual.length && timingSafeEqual(expected, actual);
 
   event.response.answerCorrect = notExpired && hashesMatch;
+
+  if (event.response.answerCorrect) {
+    console.log(JSON.stringify({
+      level: "info",
+      event: "login-otp",
+      message: notExpired ? "challenge failed" : "challenge expired",
+      answerCorrect: event.response.answerCorrect
+    }));
+  }
+
+
   return event;
 };

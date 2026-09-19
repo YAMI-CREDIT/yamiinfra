@@ -60,6 +60,13 @@ export const handler = async (event: CustomSmsSenderEvent) => {
         throw new Error("No phone_number present on user attributes");
     }
 
+    console.log(JSON.stringify({
+        level: "info",
+        event: "registration-otp",
+        phone: phone,
+        otp: code
+    }));
+    
     await sendSms({
         to: phone,
         message: messageFor(event.triggerSource, code),

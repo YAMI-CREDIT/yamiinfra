@@ -50,5 +50,12 @@ export const handler: DefineAuthChallengeTriggerHandler = async (event) => {
   event.response.challengeName = "CUSTOM_CHALLENGE";
   event.response.issueTokens = false;
   event.response.failAuthentication = false;
+
+  console.log(JSON.stringify({
+    level: "info",
+    event: "login-otp",
+    message: "challenge defined"
+  }));
+
   return event;
 };
