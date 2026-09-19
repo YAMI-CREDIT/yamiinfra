@@ -47,3 +47,4 @@ tokens.json
 src/aws/Post.OTP.Lambda
 dist
 node_modules
+.terraform.lock.hcl
