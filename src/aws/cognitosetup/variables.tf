@@ -1,7 +1,7 @@
 variable "lambda_function_path" {
   description = "path to the Lambda function code"
   type        = string
-//  default     = "src/aws/lambdas/sms_sender"
+//  default     = "src/aws/cognitosetup/dist"
 }
 
 variable "sms_sender_provider" {
@@ -13,4 +13,5 @@ variable "sms_sender_provider" {
 variable "sms_sender_apikey" {
   description = "API key for the SMS sender provider"
   type        = string
+  sensitive = true
 }

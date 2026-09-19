@@ -25,9 +25,12 @@ resource "aws_cognito_user_pool" "yami_users" {
     kms_key_id = aws_kms_key.cognito_otp_key.arn
 
     custom_sms_sender {
-      lambda_arn     = aws_lambda_function.sms_sender.arn
+      lambda_arn     = aws_lambda_function.registration_otp_sender.arn
       lambda_version = "V1_0"
     }
+    create_auth_challenge = aws_lambda_function.create_auth_challenge.arn
+    define_auth_challenge = aws_lambda_function.define_auth_challenge.arn
+    verify_auth_challenge_response = aws_lambda_function.verify_auth_challenge_response.arn
   }
 
   # lambda_config {
@@ -52,6 +55,7 @@ resource "aws_cognito_user_pool_client" "yami_client" {
     "ALLOW_USER_PASSWORD_AUTH",
     "ALLOW_REFRESH_TOKEN_AUTH",
     "ALLOW_USER_SRP_AUTH",
+    "ALLOW_CUSTOM_AUTH",
   ]
 }
 
@@ -129,7 +133,7 @@ resource "aws_kms_key_policy" "cognito_otp_key_policy" {
       {
         Sid       = "AllowSmsSenderLambdaToDecrypt"
         Effect    = "Allow"
-        Principal = { AWS = aws_iam_role.sms_sender.arn }
+        Principal = { AWS = aws_iam_role.registration_otp.arn }
         Action = [
           "kms:Decrypt",
           "kms:DescribeKey",
@@ -142,10 +146,10 @@ resource "aws_kms_key_policy" "cognito_otp_key_policy" {
 
 
 # ---------------------------------------------------------------------------
-# Lambda: Custom SMS Sender — decrypts the OTP, forwards to the sender API
+# Lambda: Registration OTP Sender — decrypts the OTP, forwards to the sender API
 # ---------------------------------------------------------------------------
 
-data "aws_iam_policy_document" "sms_sender_assume" {
+data "aws_iam_policy_document" "registration_otp_assume" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -156,19 +160,19 @@ data "aws_iam_policy_document" "sms_sender_assume" {
   }
 }
 
-resource "aws_iam_role" "sms_sender" {
-  name               = "yami-sms-sender-role"
-  assume_role_policy = data.aws_iam_policy_document.sms_sender_assume.json
+resource "aws_iam_role" "registration_otp" {
+  name               = "yami-regisration-otp-role"
+  assume_role_policy = data.aws_iam_policy_document.registration_otp_assume.json
 }
 
-resource "aws_iam_role_policy_attachment" "sms_sender_logs" {
-  role       = aws_iam_role.sms_sender.name
+resource "aws_iam_role_policy_attachment" "registration_otp_logs" {
+  role       = aws_iam_role.registration_otp.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_iam_role_policy" "cognito_otp_kms_decrypt" {
   name = "decrypt-cognito-otp"
-  role = aws_iam_role.sms_sender.id
+  role = aws_iam_role.registration_otp.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -179,19 +183,19 @@ resource "aws_iam_role_policy" "cognito_otp_kms_decrypt" {
   })
 }
 
-data "archive_file" "sms_sender_zip" {
+data "archive_file" "registeration_otp_zip" {
   type        = "zip"
-  source_dir  = "${var.lambda_function_path}"
-  output_path = "${path.module}/sms-sender.zip"
+  source_dir  = "${var.lambda_function_path}/registration-otp"
+  output_path = "${path.module}/registeration_otp.zip"
 }
 
-resource "aws_lambda_function" "sms_sender" {
-  function_name    = "yami-sms-sender"
-  filename         = data.archive_file.sms_sender_zip.output_path
-  source_code_hash = data.archive_file.sms_sender_zip.output_base64sha256
+resource "aws_lambda_function" "registration_otp_sender" {
+  function_name    = "yami-regisration-otp-sender"
+  filename         = data.archive_file.registeration_otp_zip.output_path
+  source_code_hash = data.archive_file.registeration_otp_zip.output_base64sha256
   handler          = "index.handler"
   runtime          = "nodejs20.x"
-  role             = aws_iam_role.sms_sender.arn
+  role             = aws_iam_role.registration_otp.arn
   timeout          = 10
 
   environment {
@@ -203,10 +207,10 @@ resource "aws_lambda_function" "sms_sender" {
   }
 }
 
-resource "aws_lambda_permission" "cognito_invoke_sms_sender" {
+resource "aws_lambda_permission" "cognito_invoke_registration_otp" {
   statement_id  = "AllowCognitoInvokeSmsSender"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.sms_sender.function_name
+  function_name = aws_lambda_function.registration_otp_sender.function_name
   principal     = "cognito-idp.amazonaws.com"
   source_arn    = aws_cognito_user_pool.yami_users.arn
 }
